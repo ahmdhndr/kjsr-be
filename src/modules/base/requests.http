@@ -1,0 +1,23 @@
+### Welcome to the API! 🚀
+GET http://localhost:3000/api
+Content-Type: application/json
+
+### Greeting
+POST http://localhost:3000/api?message=hello
+Content-Type: application/json
+
+{
+  "fullName": "Eru Dev"
+}
+
+### Bad Request Example
+GET http://localhost:3000/api/error
+Content-Type: application/json
+
+### Not Found Request Example
+GET http://localhost:3000/api/not-found
+Content-Type: application/json
+
+### Internal Server Error Example
+GET http://localhost:3000/api/internal-error
+Content-Type: application/json

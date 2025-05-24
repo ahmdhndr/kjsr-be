@@ -1,0 +1,44 @@
+name: Code Check
+
+on: [pull_request]
+
+jobs:
+  run-ci:
+    name: Run Type Check & Linters
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🤌 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: ⎔ Setup pnpm config
+        shell: bash
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔎 Check types
+        run: pnpm type-check
+
+      - name: ⬣ Check linting
+        run: pnpm lint
+
+      - name: ⎔ Check commits messages
+        uses: wagoid/commitlint-github-action@v6
