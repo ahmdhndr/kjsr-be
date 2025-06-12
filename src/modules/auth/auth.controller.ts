@@ -1,0 +1,70 @@
+import { SuccessResponseMessage } from '@common/decorators';
+import { CurrentUser } from '@common/decorators/current-user';
+import { Serialize } from '@common/interceptors';
+import { CreateUserDto } from '@modules/users/dto/create-user.dto';
+import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
+// import { SerializeUserDto } from '@modules/users/dto/serialize-user.dto';
+import { User } from '@modules/users/schema/user.schema';
+// import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { ApiBody } from '@nestjs/swagger';
+import { Response } from 'express';
+
+import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+
+@Controller('auth')
+@Serialize(RegisterResponseDto)
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  @SuccessResponseMessage(
+    'Account created successfully. Please check your email to verify your account!',
+  )
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: { type: 'string', example: 'John' },
+        lastName: { type: 'string', example: 'Doe' },
+        username: { type: 'string', example: 'johndoe' },
+        email: { type: 'string', example: 'johndoe@example.com' },
+        password: { type: 'string', example: '<yourpassword>' },
+        confirmPassword: { type: 'string', example: '<yourpassword>' },
+      },
+    },
+  })
+  async register(@Body() data: CreateUserDto) {
+    return this.authService.register(data);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        identifier: {
+          type: 'string',
+          example: 'johndoe@example.com / johndoe',
+        },
+        password: { type: 'string', example: '<yourpassword>' },
+      },
+    },
+  })
+  async login(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.login(user, res);
+  }
+
+  @Post('resend-otp')
+  @SuccessResponseMessage(
+    'OTP sent successfully. Please check your email to verify your account!',
+  )
+  async resendOTP(@Body() data: { identifier: string }) {
+    return this.authService.resendOTP(data.identifier);
+  }
+}
