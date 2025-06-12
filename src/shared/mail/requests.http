@@ -1,0 +1,8 @@
+POST http://localhost:3000/api/mail
+Content-Type: application/json
+
+{
+  "recipients": ["achmadhendarsyah7@gmail.com"],
+  "subject": "Test mail",
+  "html": "<h1>Hello, Achmad!</h1>"
+}

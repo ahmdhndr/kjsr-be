@@ -1,0 +1,12 @@
+### Create a user
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "username": "johndoe1",
+  "email": "johndoe1@example.com",
+  "password": "myS3cr3tpass!",
+  "confirmPassword": "myS3cr3tpass!"
+}
