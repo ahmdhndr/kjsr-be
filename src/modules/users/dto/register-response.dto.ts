@@ -9,4 +9,7 @@ export class RegisterResponseDto {
 
   @Expose()
   otp: string;
+
+  @Expose()
+  token: string;
 }

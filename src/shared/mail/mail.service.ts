@@ -53,17 +53,37 @@ export class MailService {
   }
 
   async emailVerification(user: User, otpType: OTPType) {
-    const otp = await this.otpService.generateOTP(user, otpType);
-    const emailData: SendEmailDto = {
-      recipients: [user.email],
-      subject: `KJSR verification code: ${otp}`,
-      html: `
-          <p>Your one-verification code:</p>
-          <p style="text-align: center; font-weight: bold">${otp}</p>
-          <p>Please use this otp to verify your account. This otp expires after 5 minutes.</p>
-        `,
-    };
-    await this.sendEmail(VERIFICATION_EMAIL_FROM, emailData);
-    return otp;
+    const token = await this.otpService.generateToken(user, otpType);
+
+    if (otpType === OTPType.OTP) {
+      const emailData: SendEmailDto = {
+        recipients: [user.email],
+        subject: `KJSR verification code: ${token}`,
+        html: `
+            <p>Your one-verification code:</p>
+            <p style="text-align: center; font-weight: bold">${token}</p>
+            <p>Please use this otp to verify your account. This otp expires after 5 minutes.</p>
+          `,
+      };
+      await this.sendEmail(VERIFICATION_EMAIL_FROM, emailData);
+      return token;
+    } else if (otpType === OTPType.RESET_PASSWORD) {
+      const resetLink = `${this.configService.get<string>('RESET_PASSWORD_URL')}?token=${token}`;
+
+      const emailData: SendEmailDto = {
+        recipients: [user.email],
+        subject: `[KJSR] reset password request`,
+        html: `
+            <p>Hello, ${user.username}!</p>
+            <p>We received a request to update the password for <strong>${user.username}</strong></p>
+            <p>To reset your password, click the link below:</p>
+            <a href="${resetLink}" target="_blank" style="background: #007bff; padding: 10px 20px; display: inline-block; border-radius: 4px; font-size: .85rem; margin: 0 auto; color: #fff; text-decoration: none;">Reset Password</a>
+            <p>If you did not make this request, your email address may have been entered by mistake and you can safely disregard this email.</p>
+            <p>This link valid for 15 minutes.</p>
+          `,
+      };
+      await this.sendEmail(VERIFICATION_EMAIL_FROM, emailData);
+      return token;
+    }
   }
 }

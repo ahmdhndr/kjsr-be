@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PASSWORD_HASHER } from '@common/constants/global.constant';
 import { PasswordHasher } from '@common/interfaces/password-hasher';
 import { User } from '@modules/users/schema/user.schema';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { handleServiceError } from '@utils/handle-service-error';
 import { randomInt } from 'crypto';
 import { FilterQuery, Types } from 'mongoose';
@@ -16,39 +21,56 @@ export class OTPService {
     private readonly otpRepository: OTPRepository,
     @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: PasswordHasher,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async generateOTP(user: User, type: OTPType): Promise<string> {
+  async generateToken(user: User, type: OTPType): Promise<string | undefined> {
     try {
-      // generate 6 digit otp
-      const otp = randomInt(100000, 999999).toString();
-      const hashedOtp = await this.passwordHasher.hash(otp);
+      if (type === OTPType.OTP) {
+        // generate 6 digit otp
+        const otp = randomInt(100000, 999999).toString();
+        const hashedOtp = await this.passwordHasher.hash(otp);
 
-      const now = new Date();
-      const expiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes
 
-      // Check otp with the given user
-      const existingOTP = await this.findOTPByUserId({
-        userId: user._id,
-        type,
-      });
-
-      if (existingOTP) {
-        // update existing otp
-        existingOTP.token = hashedOtp;
-        existingOTP.expiresAt = expiresAt;
-        await this.updateOTPByUserId({ userId: user._id }, existingOTP);
-      } else {
-        // create new otp
-        await this.otpRepository.create({
+        // Check otp with the given user
+        const existingOTP = await this.findOTPByUserId({
           userId: user._id,
-          token: hashedOtp,
           type,
-          expiresAt,
         });
-      }
 
-      return otp;
+        if (existingOTP) {
+          // update existing otp
+          existingOTP.token = hashedOtp;
+          existingOTP.expiresAt = expiresAt;
+          await this.updateOTPByUserId({ userId: user._id }, existingOTP);
+        } else {
+          // create new otp
+          await this.otpRepository.create({
+            userId: user._id,
+            token: hashedOtp,
+            type,
+            expiresAt,
+          });
+        }
+
+        return otp;
+      } else if (type === OTPType.RESET_PASSWORD) {
+        const resetToken = this.jwtService.sign(
+          {
+            id: user._id,
+            email: user.email,
+          },
+          {
+            secret: this.configService.get<string>('JWT_SECRET_PASSWORD_RESET'),
+            expiresIn: '15m',
+          },
+        );
+
+        return resetToken;
+      }
     } catch (error) {
       console.log(error);
       handleServiceError(error);
@@ -91,5 +113,19 @@ export class OTPService {
     update: Partial<OTP>,
   ): Promise<OTP | null> {
     return this.otpRepository.findOneAndUpdate(filterQuery, update);
+  }
+
+  async validateResetPassword(token: string) {
+    try {
+      // verify jwt token and decode the user id
+      const decodedToken = await this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_SECRET_PASSWORD_RESET'),
+      });
+
+      return decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      handleServiceError(error);
+    }
   }
 }
