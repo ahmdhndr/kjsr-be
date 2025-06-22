@@ -18,6 +18,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useLogger(app.get(Logger));
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://kjsr.ord.id'],
+    credentials: true,
+  });
 
   // Swagger
   const swaggerConfig = new DocumentBuilder()

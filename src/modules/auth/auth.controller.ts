@@ -11,6 +11,7 @@ import { ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
@@ -66,5 +67,27 @@ export class AuthController {
   )
   async resendOTP(@Body() data: { identifier: string }) {
     return this.authService.resendOTP(data.identifier);
+  }
+
+  @Post('forgot-password')
+  @SuccessResponseMessage(
+    'Password reset link sent successfully. Please check your email to reset your password',
+  )
+  async forgotPassword(@Body() data: { identifier: string }) {
+    return this.authService.forgotPassword(data.identifier);
+  }
+
+  @Post('reset-password')
+  @SuccessResponseMessage(
+    'Password successfully reset. Please log in with your new password',
+  )
+  resetPassword(@Body() data: ResetPasswordDto) {
+    return this.authService.resetPassword(data);
+  }
+
+  @Post('verify-user')
+  @SuccessResponseMessage('Account verified successfully')
+  verifyUser(@Body() data: { email: string; otp: string }) {
+    return this.authService.verifyUser(data);
   }
 }

@@ -11,4 +11,6 @@ export const envSchema = z.object({
   EMAIL_SMTP_SECURE: z.coerce.boolean(),
   JWT_SECRET: z.string(),
   JWT_EXPIRATION: z.string(),
+  JWT_SECRET_PASSWORD_RESET: z.string(),
+  RESET_PASSWORD_URL: z.string(),
 });
