@@ -124,7 +124,6 @@ export class OTPService {
 
       return decodedToken.id;
     } catch (error) {
-      console.log(error);
       handleServiceError(error);
     }
   }
