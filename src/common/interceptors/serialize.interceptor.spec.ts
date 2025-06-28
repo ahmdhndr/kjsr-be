@@ -1,4 +1,4 @@
-import { ResponseDto } from '@modules/base/dto/response.dto';
+import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
 import { CallHandler, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { of } from 'rxjs';
@@ -6,12 +6,12 @@ import { of } from 'rxjs';
 import { SerializeInterceptor } from './serialize.interceptor';
 
 describe('SerializeInterceptor', () => {
-  let interceptor: SerializeInterceptor<ResponseDto>;
+  let interceptor: SerializeInterceptor<RegisterResponseDto>;
   let mockReflector: Reflector;
 
   beforeEach(() => {
     mockReflector = new Reflector();
-    interceptor = new SerializeInterceptor(ResponseDto, mockReflector);
+    interceptor = new SerializeInterceptor(RegisterResponseDto, mockReflector);
   });
 
   it('should serialize data correctly', (done) => {
