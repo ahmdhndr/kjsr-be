@@ -6,8 +6,15 @@ import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
 // import { SerializeUserDto } from '@modules/users/dto/serialize-user.dto';
 import { User } from '@modules/users/schema/user.schema';
 // import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
-import { ApiBody } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
@@ -42,6 +49,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(200)
   @ApiBody({
     schema: {
       type: 'object',
@@ -62,31 +70,85 @@ export class AuthController {
   }
 
   @Post('resend-otp')
+  @HttpCode(200)
   @SuccessResponseMessage(
     'OTP sent successfully. Please check your email to verify your account!',
   )
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        identifier: {
+          type: 'string',
+          example: 'johndoe@example.com / johndoe',
+        },
+      },
+    },
+  })
   async resendOTP(@Body() data: { identifier: string }) {
     return this.authService.resendOTP(data.identifier);
   }
 
   @Post('forgot-password')
+  @HttpCode(200)
   @SuccessResponseMessage(
     'Password reset link sent successfully. Please check your email to reset your password',
   )
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        identifier: {
+          type: 'string',
+          example: 'johndoe@example.com / johndoe',
+        },
+      },
+    },
+  })
   async forgotPassword(@Body() data: { identifier: string }) {
     return this.authService.forgotPassword(data.identifier);
   }
 
   @Post('reset-password')
+  @HttpCode(200)
   @SuccessResponseMessage(
     'Password successfully reset. Please log in with your new password',
   )
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string', example: '<yourtoken>' },
+        password: {
+          type: 'string',
+          example: '<newpassword>',
+        },
+        confirmPassword: {
+          type: 'string',
+          example: '<newpassword>',
+        },
+      },
+    },
+  })
   resetPassword(@Body() data: ResetPasswordDto) {
     return this.authService.resetPassword(data);
   }
 
   @Post('verify-user')
+  @HttpCode(200)
   @SuccessResponseMessage('Account verified successfully')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+          example: 'johndoe@example.com',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Verify user with the given email' })
   verifyUser(@Body() data: { email: string; otp: string }) {
     return this.authService.verifyUser(data);
   }
