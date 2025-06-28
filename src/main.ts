@@ -19,7 +19,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useLogger(app.get(Logger));
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://kjsr.ord.id'],
+    origin: [
+      'http://localhost:3000',
+      'https://www.kjsr.or.id',
+      'https://kjsr.or.id',
+    ],
     credentials: true,
   });
 
