@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    p strong {
+      color: #1d3658;
+    }
+
+    blockquote {
+      background-color: #eff6fa;
+      padding: 12px;
+      border-left: 4px solid #E63746;
+    }
+
+    .container {
+      width: 100%;
+      margin: 20px auto;
+      background: #eff6fa;
+      overflow: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #E63746;
+      padding: 20px;
+    }
+
+    .header img {
+      max-width: 85px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .button {
+      padding: 12px 20px;
+      margin: 20px 0;
+      text-decoration: none;
+      background-color: #1d3658;
+      color: #eff6fa;
+      font-weight: bold;
+      border-radius: 5px;
+      display: flex;
+      width: fit-content;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #eff6fa;
+      background: #1d3658;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="cid:kjsr-logo" alt="KJSR Logo" />
+    </div>
+    <div class="content">
+      {{!-- Dinamis --}}
+      <p>Halo!</p>
+
+      <p>Terima kasih sudah mengajukan email untuk bergabung dengan <strong>KJSR Indonesia</strong>.</p>
+      <p>Sayangnya, email {{email}} belum bisa kami setujui saat ini.</p>
+      <p>Alasannya:</p>
+      <blockquote>
+        {{reason}}
+      </blockquote>
+
+      <p style="margin-top: 24px; font-size: 12px; color: #999;">
+        Email ini dikirim otomatis oleh sistem. Mohon tidak membalas langsung.
+      </p>
+      {{!-- End Dinamis --}}
+
+      <p>Salam hormat,</p>
+      <p><strong>KJSR Indonesia</strong></p>
+    </div>
+    <div class="footer">
+      <address>Jl. Teuku Umar No. 8, RT. 01 RW. 01, Gondangdia, Kec. Menteng, Kota Jakarta Pusat, Daerah Khusus
+        Ibukota
+        Jakarta 10350,
+        021-3909176</address>
+      <span>Email: <a href="mailto:hello@kjsr.or.id" style="color: white">hello@kjsr.or.id</a></span>
+      <br>
+      <br>
+      <span>&copy; {{year}} KJSR Indonesia</span>
+    </div>
+  </div>
+</body>
+
+</html>

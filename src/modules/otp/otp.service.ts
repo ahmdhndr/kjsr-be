@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PASSWORD_HASHER } from '@common/constants/global.constant';
 import { PasswordHasher } from '@common/interfaces/password-hasher';
 import { User } from '@modules/users/schema/user.schema';
@@ -72,7 +69,6 @@ export class OTPService {
         return resetToken;
       }
     } catch (error) {
-      console.log(error);
       handleServiceError(error);
     }
   }
@@ -118,10 +114,12 @@ export class OTPService {
   async validateResetPassword(token: string) {
     try {
       // verify jwt token and decode the user id
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const decodedToken = await this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_SECRET_PASSWORD_RESET'),
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
       return decodedToken.id;
     } catch (error) {
       handleServiceError(error);

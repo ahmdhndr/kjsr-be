@@ -12,5 +12,5 @@ export const envSchema = z.object({
   JWT_SECRET: z.string(),
   JWT_EXPIRATION: z.string(),
   JWT_SECRET_PASSWORD_RESET: z.string(),
-  RESET_PASSWORD_URL: z.string(),
+  CLIENT_URL: z.string(),
 });

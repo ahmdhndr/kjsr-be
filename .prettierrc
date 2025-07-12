@@ -12,5 +12,13 @@
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
-  "importOrderParserPlugins": ["typescript", "decorators-legacy"]
+  "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+  "overrides": [
+    {
+      "files": "**/*.hbs",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }
