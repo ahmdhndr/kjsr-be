@@ -82,7 +82,7 @@ export class OTPService {
 
       if (!validToken) {
         throw new UnauthorizedException(
-          'Wrong or expired OTP. Please, request a new one.',
+          'Token expired. Please, request a new one.',
         );
       }
 
@@ -111,9 +111,9 @@ export class OTPService {
     return this.otpRepository.findOneAndUpdate(filterQuery, update);
   }
 
-  async validateResetPassword(token: string) {
+  async validateToken(token: string) {
     try {
-      // verify jwt token and decode the user id
+      // verify jwt token and decode the id
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const decodedToken = await this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_SECRET_PASSWORD_RESET'),

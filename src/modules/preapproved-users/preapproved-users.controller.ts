@@ -15,7 +15,7 @@ export class PreapprovedUsersController {
   ) {}
 
   @Post('/request')
-  @SuccessResponseMessage('User request submitted successfully')
+  @SuccessResponseMessage('Approval submitted successfully')
   async request(@Body() data: PreapprovedUserDTO) {
     return this.preapprovedUsersService.requestPreapprovedUser(data);
   }

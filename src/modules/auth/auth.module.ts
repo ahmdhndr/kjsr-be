@@ -1,4 +1,5 @@
 import { OTPModule } from '@modules/otp/otp.module';
+import { PreapprovedUsersModule } from '@modules/preapproved-users/preapproved-users.module';
 import { UsersModule } from '@modules/users/users.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -19,6 +20,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule,
     OTPModule,
     MailModule,
+    PreapprovedUsersModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),

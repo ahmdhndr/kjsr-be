@@ -48,7 +48,7 @@ export class PreapprovedUsersService {
       });
       if (isEmailExist) {
         throw new UnprocessableEntityException(
-          'Email has been submitted. Please wait for admin approval.',
+          `This email has already been submitted. Current approval status: ${isEmailExist.status}`,
         );
       }
     } catch (error) {
@@ -116,15 +116,16 @@ export class PreapprovedUsersService {
       if (status === STATUS_PREAPPROVAL.APPROVED) {
         const registerToken = this.jwtService.sign(
           {
+            id: preapproval._id,
             email,
           },
           {
-            secret: this.configService.get<string>('JWT_SECRET_PASSWORD_RESET'),
+            secret: this.configService.get<string>('JWT_SECRET'),
             expiresIn: '3d',
           },
         );
 
-        const expiresAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 hari
+        const expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 hari
 
         preapproval.registerToken = registerToken;
         preapproval.status = status;
@@ -135,7 +136,7 @@ export class PreapprovedUsersService {
           preapproval,
         );
 
-        const registerUrl = `${this.configService.get<string>('CLIENT_URL')}/register?token=${registerToken}`;
+        const registerUrl = `${this.configService.get<string>('CLIENT_URL')}/register?email=${email}&token=${registerToken}`;
 
         // send notif to user
         await this.mailService.sendEmail({
@@ -180,5 +181,15 @@ export class PreapprovedUsersService {
     }
 
     return null;
+  }
+
+  async findOneBy(
+    filterQuery: FilterQuery<PreapprovedUser>,
+  ): Promise<PreapprovedUser | null> {
+    try {
+      return this.preapprovedUserRepository.findOne(filterQuery);
+    } catch (error) {
+      handleServiceError(error);
+    }
   }
 }
