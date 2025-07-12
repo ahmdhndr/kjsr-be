@@ -33,6 +33,9 @@ export const createUserSchema = z.object({
   confirmPassword: z
     .string({ message: 'property `confirmPassword` is missing' })
     .nonempty('Confirm password cannot be empty'),
+  token: z
+    .string({ message: 'property `token` is missing' })
+    .nonempty('Register token cannot be empty'),
 });
 
 export const refineCreateUserSchema = createUserSchema.refine(
