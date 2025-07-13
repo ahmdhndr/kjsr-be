@@ -46,7 +46,7 @@ export class AuthService {
   async register(data: CreateUserDto) {
     try {
       const preapproval = await this.preapprovedUsersService.findOneBy({
-        $and: [{ email: data.email }, { registerToken: data.token }],
+        email: data.email,
       });
       if (!preapproval) {
         throw new ForbiddenException(

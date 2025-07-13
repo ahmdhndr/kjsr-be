@@ -125,7 +125,7 @@ export class PreapprovedUsersService {
           },
         );
 
-        const expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 hari
+        const expiresAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 hari
 
         preapproval.registerToken = registerToken;
         preapproval.status = status;
