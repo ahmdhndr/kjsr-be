@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "types": [
       "node",
-      "multer"
+      "multer",
+      "jest",
     ],
     "paths": {
       "@common/*": [
