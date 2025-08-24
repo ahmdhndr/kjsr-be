@@ -15,12 +15,10 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '@shared/mail/mail.service';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
-import { Response } from 'express';
 import { Types } from 'mongoose';
 
 import {
@@ -40,7 +38,6 @@ export class AuthService {
     @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: PasswordHasher,
     private readonly preapprovedUsersService: PreapprovedUsersService,
-    private readonly configService: ConfigService,
   ) {}
 
   async register(data: CreateUserDto) {
@@ -68,8 +65,7 @@ export class AuthService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async login(user: User, res: Response) {
+  login(user: User) {
     try {
       const tokenPayload: TokenPayload = {
         userId: user._id,
@@ -78,13 +74,15 @@ export class AuthService {
       const expires = new Date();
       expires.setSeconds(expires.getSeconds() + 3600);
 
-      const token = this.jwtService.sign(tokenPayload);
-
-      res.cookie('authentication', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        expires,
+      const token = this.jwtService.sign(tokenPayload, {
+        expiresIn: '1h',
       });
+
+      // res.cookie('authentication', token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   expires,
+      // });
 
       return { token };
     } catch (error) {

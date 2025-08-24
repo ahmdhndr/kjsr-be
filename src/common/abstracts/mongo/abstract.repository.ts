@@ -1,3 +1,4 @@
+import { PaginationInterface } from '@common/interfaces/pagination/pagination.interface';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 
@@ -65,5 +66,36 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     }
 
     return document;
+  }
+
+  async findRaw(filterQuery: FilterQuery<TDocument>) {
+    return this.model.find(filterQuery);
+  }
+
+  async findPaginated(
+    filterQuery: FilterQuery<TDocument>,
+    options: { page: number; limit: number; sort?: Record<string, 1 | -1> },
+  ): Promise<{ data: TDocument[]; meta: PaginationInterface }> {
+    const { page, limit, sort = { createdAt: -1 } } = options;
+
+    const [data, total] = await Promise.all([
+      this.model
+        .find(filterQuery)
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean<TDocument[]>(true),
+      this.model.countDocuments(filterQuery),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }

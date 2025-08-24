@@ -13,4 +13,9 @@ export const envSchema = z.object({
   JWT_EXPIRATION: z.string(),
   JWT_SECRET_PASSWORD_RESET: z.string(),
   CLIENT_URL: z.string(),
+  R2_ACCOUNT_ID: z.string(),
+  R2_ACCESS_KEY_ID: z.string(),
+  R2_SECRET_ACCESS_KEY: z.string(),
+  R2_BUCKET_NAME: z.string(),
+  R2_PUBLIC_URL: z.string(),
 });

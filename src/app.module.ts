@@ -7,6 +7,10 @@ import { PreapprovedUsersModule } from '@modules/preapproved-users/preapproved-u
 import { UsersModule } from '@modules/users/users.module';
 import { Module } from '@nestjs/common';
 import { MailModule } from '@shared/mail/mail.module';
+import { R2Module } from '@shared/r2/r2.module';
+
+import { CategoriesModule } from './modules/categories/categories.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
   imports: [
@@ -18,6 +22,9 @@ import { MailModule } from '@shared/mail/mail.module';
     MailModule,
     OTPModule,
     PreapprovedUsersModule,
+    CategoriesModule,
+    R2Module,
+    MediaModule,
   ],
 })
 export class AppModule {}
