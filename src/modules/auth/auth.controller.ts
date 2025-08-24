@@ -6,16 +6,8 @@ import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
 // import { SerializeUserDto } from '@modules/users/dto/serialize-user.dto';
 import { User } from '@modules/users/schema/user.schema';
 // import { RegisterResponseDto } from '@modules/users/dto/register-response.dto';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
-import { Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -62,11 +54,8 @@ export class AuthController {
       },
     },
   })
-  async login(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.authService.login(user, res);
+  login(@CurrentUser() user: User) {
+    return this.authService.login(user);
   }
 
   @Post('resend-otp')

@@ -14,6 +14,9 @@ export class SerializeUserDto {
   email: string;
 
   @Expose()
+  role: string;
+
+  @Expose()
   avatar: string;
 
   @Expose()
