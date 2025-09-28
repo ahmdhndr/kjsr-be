@@ -1,6 +1,12 @@
 import { PaginationInterface } from '@common/interfaces/pagination/pagination.interface';
 import { Logger, NotFoundException } from '@nestjs/common';
-import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  PopulateOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 
 import { AbstractDocument } from './abstract.schema';
 
@@ -14,16 +20,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       ...document,
       _id: new Types.ObjectId(),
     });
-
-    return (await createdDocument.save()).toJSON() as unknown as TDocument;
+    return createdDocument.save();
   }
 
   async findOne(
     filterQuery: FilterQuery<TDocument>,
   ): Promise<TDocument | null> {
-    const document = await this.model
-      .findOne(filterQuery)
-      .lean<TDocument>(true);
+    const document = await this.model.findOne(filterQuery);
 
     if (!document) {
       this.logger.warn('Document was not found with filterQuery', filterQuery);
@@ -37,9 +40,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
   ): Promise<TDocument> {
-    const document = await this.model
-      .findOneAndUpdate(filterQuery, update, { new: true })
-      .lean<TDocument>(true);
+    const document = await this.model.findOneAndUpdate(filterQuery, update, {
+      new: true,
+    });
 
     if (!document) {
       this.logger.warn('Document was not found with filterQuery', filterQuery);
@@ -50,15 +53,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   }
 
   async find(filterQuery: FilterQuery<TDocument>): Promise<TDocument[]> {
-    return await this.model.find(filterQuery).lean<TDocument[]>(true);
+    return await this.model.find(filterQuery);
   }
 
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>,
   ): Promise<TDocument> {
-    const document = await this.model
-      .findOneAndDelete(filterQuery)
-      .lean<TDocument>(true);
+    const document = await this.model.findOneAndDelete(filterQuery);
 
     if (!document) {
       this.logger.warn('Document was not found with filterQuery', filterQuery);
@@ -68,23 +69,40 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return document;
   }
 
-  async findRaw(filterQuery: FilterQuery<TDocument>) {
-    return this.model.find(filterQuery);
+  async findRaw(
+    filterQuery: FilterQuery<TDocument>,
+    options?: { populate?: PopulateOptions | (string | PopulateOptions)[] },
+  ) {
+    let query = this.model.find(filterQuery);
+    if (options?.populate) {
+      query = query.populate(options.populate);
+    }
+    return query;
   }
 
   async findPaginated(
     filterQuery: FilterQuery<TDocument>,
-    options: { page: number; limit: number; sort?: Record<string, 1 | -1> },
+    options: {
+      page: number;
+      limit: number;
+      sort?: Record<string, 1 | -1>;
+      populate?: PopulateOptions | (string | PopulateOptions)[];
+    },
   ): Promise<{ data: TDocument[]; meta: PaginationInterface }> {
-    const { page, limit, sort = { createdAt: -1 } } = options;
+    const { page, limit, sort = { createdAt: -1 }, populate } = options;
+
+    let q = this.model
+      .find(filterQuery)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    if (populate) {
+      q = q.populate(populate);
+    }
 
     const [data, total] = await Promise.all([
-      this.model
-        .find(filterQuery)
-        .sort(sort)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .lean<TDocument[]>(true),
+      q,
       this.model.countDocuments(filterQuery),
     ]);
 

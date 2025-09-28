@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { R2Module } from '@shared/r2/r2.module';
+import { StorageModule } from '@shared/storage/storage.module';
 
 import { MediaController } from './media.controller';
 import { MediaService } from './media.service';
 
 @Module({
-  imports: [R2Module],
+  imports: [StorageModule],
   providers: [MediaService],
   controllers: [MediaController],
   exports: [MediaService],

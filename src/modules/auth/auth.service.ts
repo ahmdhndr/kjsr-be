@@ -75,7 +75,7 @@ export class AuthService {
       expires.setSeconds(expires.getSeconds() + 3600);
 
       const token = this.jwtService.sign(tokenPayload, {
-        expiresIn: '1h',
+        expiresIn: process.env.JWT_EXPIRATION,
       });
 
       // res.cookie('authentication', token, {

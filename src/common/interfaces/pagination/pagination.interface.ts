@@ -4,3 +4,9 @@ export interface PaginationInterface {
   limit: number;
   totalPages: number;
 }
+
+export interface QueryPaginationInterface {
+  page?: number;
+  limit?: number;
+  search?: string;
+}

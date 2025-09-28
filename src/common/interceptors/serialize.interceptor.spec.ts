@@ -11,7 +11,11 @@ describe('SerializeInterceptor', () => {
 
   beforeEach(() => {
     mockReflector = new Reflector();
-    interceptor = new SerializeInterceptor(RegisterResponseDto, mockReflector);
+    interceptor = new SerializeInterceptor(
+      RegisterResponseDto,
+      {},
+      mockReflector,
+    );
   });
 
   it('should serialize data correctly', (done) => {

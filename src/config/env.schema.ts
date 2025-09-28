@@ -18,4 +18,7 @@ export const envSchema = z.object({
   R2_SECRET_ACCESS_KEY: z.string(),
   R2_BUCKET_NAME: z.string(),
   R2_PUBLIC_URL: z.string(),
+  EMAIL_BRAND_LOGO: z.string(),
+  STORAGE_DRIVER: z.string(),
+  BASE_URL: z.string(),
 });

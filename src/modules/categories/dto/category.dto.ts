@@ -2,7 +2,7 @@ import { PaginationInterface } from '@common/interfaces/pagination/pagination.in
 import { Expose, Type } from 'class-transformer';
 import { z } from 'zod';
 
-export const createCategorySchema = z.object({
+export const categorySchema = z.object({
   name: z
     .string({ message: 'property `name` is missing' })
     .nonempty('Name cannot be empty'),
@@ -13,13 +13,7 @@ export const createCategorySchema = z.object({
   iconPath: z.string({ message: 'property `iconPath` is missing' }).nullable(),
 });
 
-export const updateCategorySchema = z.object({
-  name: z.string().optional(),
-  description: z.string().nullable().optional(),
-  iconUrl: z.string().nullable().optional(),
-});
-
-export type CreateCategoryDto = z.infer<typeof createCategorySchema>;
+export type CategoryDto = z.infer<typeof categorySchema>;
 
 export class SerializeCategoryDto {
   @Expose()

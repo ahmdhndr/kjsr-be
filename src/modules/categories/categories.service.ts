@@ -1,12 +1,16 @@
 import { PaginationInterface } from '@common/interfaces/pagination/pagination.interface';
 import { MediaService } from '@modules/media/media.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import { FilterQuery } from 'mongoose';
 
 import { CategoriesRepository } from './categories.repository';
-import { CreateCategoryDto, createCategorySchema } from './dto/category.dto';
+import { CategoryDto, categorySchema } from './dto/category.dto';
 import { Category } from './schema/category.schema';
 
 @Injectable()
@@ -16,9 +20,9 @@ export class CategoriesService {
     private readonly mediaService: MediaService,
   ) {}
 
-  async createCategory(data: CreateCategoryDto): Promise<Category> {
+  async createCategory(data: CategoryDto): Promise<Category> {
     try {
-      const result = createCategorySchema.safeParse(data);
+      const result = categorySchema.safeParse(data);
 
       if (!result.success) {
         throw new BadRequestException({
@@ -39,7 +43,7 @@ export class CategoriesService {
     data: Partial<Category>,
   ): Promise<Category> {
     try {
-      const result = createCategorySchema.partial().safeParse(data);
+      const result = categorySchema.partial().safeParse(data);
 
       if (!result.success) {
         throw new BadRequestException({
@@ -49,7 +53,7 @@ export class CategoriesService {
       const category = await this.categoriesRepository.findOne(filterQuery);
 
       if (!category) {
-        throw new BadRequestException('Category not found');
+        throw new NotFoundException('Category not found');
       }
 
       const updatedCategory = await this.categoriesRepository.findOneAndUpdate(
@@ -93,13 +97,12 @@ export class CategoriesService {
     }
   }
 
-  // service to delete category
   async deleteCategory(id: string): Promise<Category | null> {
     try {
       const category = await this.categoriesRepository.findOne({ _id: id });
 
       if (!category) {
-        throw new BadRequestException('Category not found');
+        throw new NotFoundException('Category not found');
       }
 
       // check if category has iconUrl and iconPath
@@ -110,6 +113,20 @@ export class CategoriesService {
 
       await this.categoriesRepository.findOneAndDelete({ _id: id });
       return null;
+    } catch (error) {
+      handleServiceError(error);
+    }
+  }
+
+  async getCategoriesByName(names: string[]) {
+    try {
+      const nameRegex = names.map((name) => new RegExp(name, 'i'));
+
+      const categories = await this.categoriesRepository.find({
+        $or: nameRegex.map((regex) => ({ name: { $regex: regex } })),
+      });
+
+      return categories;
     } catch (error) {
       handleServiceError(error);
     }
