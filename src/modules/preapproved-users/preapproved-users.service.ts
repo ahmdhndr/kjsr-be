@@ -136,7 +136,7 @@ export class PreapprovedUsersService {
           preapproval,
         );
 
-        const registerUrl = `${this.configService.get<string>('CLIENT_URL')}/register?email=${email}&token=${registerToken}`;
+        // const registerUrl = `${this.configService.get<string>('CLIENT_URL')}/register?email=${email}&token=${registerToken}`;
 
         // send notif to user
         await this.mailService.sendEmail({
@@ -145,7 +145,7 @@ export class PreapprovedUsersService {
           template: 'preapproved-approved',
           context: {
             email,
-            registerUrl,
+            registerToken,
           },
         });
       } else if (status === STATUS_PREAPPROVAL.REJECTED) {

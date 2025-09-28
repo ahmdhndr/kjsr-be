@@ -31,6 +31,10 @@ handlebars.registerHelper('year', () => new Date().getFullYear());
         },
         defaults: {
           from: DEFAULT_EMAIL_FROM,
+          context: {
+            clientUrl: configService.get<string>('CLIENT_URL'),
+            brandLogo: configService.get<string>('EMAIL_BRAND_LOGO'),
+          },
         },
         template: {
           dir: join(__dirname, 'shared/mail/templates'),

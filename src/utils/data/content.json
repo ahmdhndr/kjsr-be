@@ -1,0 +1,107 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": { "level": 1 },
+      "content": [{ "type": "text", "text": "Yuk Mulai tulis Artikel-mu!" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Bagikan cerita, tips sehat, atau pengalamanmu biar sama-sama terinspirasi menjaga jantung sejak remaja."
+        }
+      ]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [{ "type": "bold" }],
+                  "text": "Tentukan Judul Menarik: "
+                },
+                {
+                  "type": "text",
+                  "text": "“5 Cara Seru Jaga Jantung Sehat di Sekolah”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [{ "type": "bold" }],
+                  "text": "Pilih Kategori: "
+                },
+                {
+                  "type": "text",
+                  "text": "Olahraga, Pola Makan, Event KJSR, Inspirasi"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [{ "type": "bold" }],
+                  "text": "Tulis Isi Artikelmu: "
+                },
+                {
+                  "type": "text",
+                  "text": "Awali dengan cerita ringan atau fakta unik"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [{ "type": "bold" }],
+                  "text": "Tambahkan Gambar Sampul: "
+                },
+                { "type": "text", "text": "foto kegiatan, ilustrasi seru" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "marks": [{ "type": "italic" }],
+          "text": "Artikelmu akan tampil di halaman utama KJSR, dibaca teman-teman sebaya, dan jadi inspirasi gaya hidup sehat."
+        }
+      ]
+    }
+  ]
+}

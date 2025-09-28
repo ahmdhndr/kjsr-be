@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { R2Service } from '@shared/r2/r2.service';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { StorageDriver } from '@shared/storage/storage-driver';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 
@@ -12,7 +12,7 @@ import {
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly r2Service: R2Service) {}
+  constructor(@Inject('STORAGE_DRIVER') private storage: StorageDriver) {}
 
   async upload(
     payload: CreateMediaDto,
@@ -27,7 +27,7 @@ export class MediaService {
       }
 
       const { file, folder } = result.data;
-      const uploadResult = await this.r2Service.uploadFile({ file, folder });
+      const uploadResult = await this.storage.uploadFile({ file, folder });
       return uploadResult;
     } catch (error) {
       handleServiceError(error);
@@ -47,7 +47,7 @@ export class MediaService {
       }
 
       const { path } = result.data;
-      const uploadResult = await this.r2Service.deleteFile({ key: path });
+      const uploadResult = await this.storage.deleteFile({ key: path });
       return uploadResult;
     } catch (error) {
       handleServiceError(error);

@@ -7,7 +7,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
-import { join } from 'path';
 
 import { SendEmailDto, sendEmailSchema } from './dto/send-email.dto';
 
@@ -41,13 +40,6 @@ export class MailService {
         subject,
         template,
         context,
-        attachments: [
-          {
-            filename: 'logo-kjsr.png',
-            path: join(__dirname, '..', '/public/logo-kjsr.png'),
-            cid: 'kjsr-logo',
-          },
-        ],
       };
       await this.mailerService.sendMail(options);
     } catch (error) {

@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { plainToInstance } from 'class-transformer';
+import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,13 +14,17 @@ interface ClassConstructor<T> {
   new (...args: any[]): T;
 }
 
-export function Serialize<T>(dto: ClassConstructor<T>) {
-  return UseInterceptors(new SerializeInterceptor(dto));
+export function Serialize<T>(
+  dto: ClassConstructor<T>,
+  options?: ClassTransformOptions,
+) {
+  return UseInterceptors(new SerializeInterceptor(dto, options));
 }
 
 export class SerializeInterceptor<T> implements NestInterceptor {
   constructor(
     private readonly dto: ClassConstructor<T>,
+    private readonly options: ClassTransformOptions = {}, // default kosong
     private readonly reflector: Reflector = new Reflector(),
   ) {}
 
@@ -35,6 +39,7 @@ export class SerializeInterceptor<T> implements NestInterceptor {
       map((data: T | T[]) => {
         const transformed = plainToInstance(this.dto, data, {
           excludeExtraneousValues: true,
+          ...this.options,
         }) as T | T[];
 
         return {

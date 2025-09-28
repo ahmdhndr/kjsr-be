@@ -2,6 +2,7 @@ import { SuccessResponseMessage } from '@common/decorators';
 import { Roles } from '@common/decorators/roles.decorator';
 import { RolesGuard } from '@common/guards/roles.guard';
 import { Serialize } from '@common/interceptors';
+import { QueryPaginationInterface } from '@common/interfaces/pagination/pagination.interface';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import {
   Body,
@@ -17,7 +18,7 @@ import {
 
 import { CategoriesService } from './categories.service';
 import {
-  CreateCategoryDto,
+  CategoryDto,
   ListCategoryDto,
   SerializeCategoryDto,
 } from './dto/category.dto';
@@ -31,12 +32,9 @@ export class CategoriesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Serialize(SerializeCategoryDto)
   @SuccessResponseMessage('Category created successfully!')
-  async createCategory(@Body() payload: CreateCategoryDto) {
+  async createCategory(@Body() payload: CategoryDto) {
     const newCategory = await this.categoriesService.createCategory(payload);
-    return {
-      id: newCategory._id.toString(),
-      ...newCategory,
-    };
+    return newCategory;
   }
 
   @Patch(':id')
@@ -44,10 +42,7 @@ export class CategoriesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Serialize(SerializeCategoryDto)
   @SuccessResponseMessage('Category updated successfully!')
-  async updateCategory(
-    @Param('id') id: string,
-    @Body() payload: CreateCategoryDto,
-  ) {
+  async updateCategory(@Param('id') id: string, @Body() payload: CategoryDto) {
     const updatedCategory = await this.categoriesService.updateCategory(
       { _id: id },
       payload,
@@ -57,15 +52,10 @@ export class CategoriesController {
 
   @Get()
   @Serialize(ListCategoryDto)
-  async getAllCategories(
-    @Query() query: { page?: number; limit?: number; search?: string },
-  ) {
+  async getAllCategories(@Query() query: QueryPaginationInterface) {
     const result = await this.categoriesService.findAllCategories(query);
     return {
-      list: result.data.map((category) => ({
-        id: category._id.toString(),
-        ...category,
-      })),
+      list: result.data,
       meta: result.meta,
     };
   }
