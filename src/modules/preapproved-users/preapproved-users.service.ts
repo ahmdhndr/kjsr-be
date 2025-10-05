@@ -3,9 +3,16 @@ import {
   STATUS_PREAPPROVAL,
 } from '@common/constants/global.constant';
 import {
+  PaginationInterface,
+  QueryPaginationInterface,
+} from '@common/interfaces/pagination/pagination.interface';
+import { UsersService } from '@modules/users/users.service';
+import {
   BadRequestException,
+  Inject,
   Injectable,
   UnprocessableEntityException,
+  forwardRef,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -32,9 +39,11 @@ export class PreapprovedUsersService {
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly userService: UsersService,
   ) {}
 
-  private async checkEmailExist(data: PreapprovedUserDTO) {
+  private async checkEmail(data: PreapprovedUserDTO) {
     try {
       const result = preapprovedUserSchema.safeParse(data);
 
@@ -46,9 +55,18 @@ export class PreapprovedUsersService {
       const isEmailExist = await this.preapprovedUserRepository.findOne({
         email: data.email,
       });
+      const isEmailRegistered = await this.userService.isEmailRegistered({
+        email: data.email,
+      });
       if (isEmailExist) {
         throw new UnprocessableEntityException(
           `This email has already been submitted. Current approval status: ${isEmailExist.status}`,
+        );
+      }
+
+      if (isEmailRegistered) {
+        throw new UnprocessableEntityException(
+          'This email already registered. Please login using that email',
         );
       }
     } catch (error) {
@@ -60,14 +78,11 @@ export class PreapprovedUsersService {
     preapprovedUser: PreapprovedUserDTO,
   ): Promise<PreapprovedUser> {
     try {
-      await this.checkEmailExist(preapprovedUser);
+      await this.checkEmail(preapprovedUser);
       const result =
         await this.preapprovedUserRepository.create(preapprovedUser);
 
-      const adminRecipients = [
-        ADMIN_RECIPIENT,
-        'achmadhendarsyah7@gmail.com',
-      ] as [string, ...string[]];
+      const adminRecipients = ADMIN_RECIPIENT as [string, ...string[]];
 
       // send notif to admin
       await this.mailService.sendEmail({
@@ -78,6 +93,7 @@ export class PreapprovedUsersService {
           email: preapprovedUser.email,
         },
       });
+
       return result;
     } catch (error) {
       handleServiceError(error);
@@ -136,8 +152,6 @@ export class PreapprovedUsersService {
           preapproval,
         );
 
-        // const registerUrl = `${this.configService.get<string>('CLIENT_URL')}/register?email=${email}&token=${registerToken}`;
-
         // send notif to user
         await this.mailService.sendEmail({
           recipients: [email],
@@ -188,6 +202,33 @@ export class PreapprovedUsersService {
   ): Promise<PreapprovedUser | null> {
     try {
       return this.preapprovedUserRepository.findOne(filterQuery);
+    } catch (error) {
+      handleServiceError(error);
+    }
+  }
+
+  async listApprovalUser(
+    queries: QueryPaginationInterface,
+  ): Promise<{ list: PreapprovedUser[]; meta: PaginationInterface }> {
+    const page = queries.page ?? 1;
+    const limit = queries.limit ?? 10;
+    const search = queries.search?.trim();
+
+    try {
+      const query: Record<string, unknown> = {
+        status: STATUS_PREAPPROVAL.PENDING,
+      };
+
+      if (search) {
+        query.$or = [{ email: new RegExp(search, 'i') }];
+      }
+
+      const result = await this.preapprovedUserRepository.findPaginated(query, {
+        page,
+        limit,
+      });
+
+      return result;
     } catch (error) {
       handleServiceError(error);
     }

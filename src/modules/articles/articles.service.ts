@@ -1,5 +1,9 @@
 import { ArticleStatus } from '@common/constants/global.constant';
-import { PaginationInterface } from '@common/interfaces/pagination/pagination.interface';
+import {
+  ArticlePaginationInterface,
+  PaginationInterface,
+  QueryPaginationInterface,
+} from '@common/interfaces/pagination/pagination.interface';
 import { CategoriesService } from '@modules/categories/categories.service';
 import { MediaService } from '@modules/media/media.service';
 import { User } from '@modules/users/schema/user.schema';
@@ -174,12 +178,9 @@ export class ArticlesService {
     return article;
   }
 
-  async getArticles(queries: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    category?: string;
-  }): Promise<{ list: Article[]; meta: PaginationInterface }> {
+  async getArticles(
+    queries: ArticlePaginationInterface,
+  ): Promise<{ list: Article[]; meta: PaginationInterface }> {
     const page = queries.page ?? 1;
     const limit = queries.limit ?? 10;
     const search = queries.search?.trim();
@@ -235,11 +236,7 @@ export class ArticlesService {
 
   async getArticlesByUser(
     authorId: Types.ObjectId,
-    queries: {
-      page?: number;
-      limit?: number;
-      search?: string;
-    },
+    queries: QueryPaginationInterface,
   ): Promise<{ list: Article[]; meta: PaginationInterface }> {
     const page = queries.page ?? 1;
     const limit = queries.limit ?? 10;
@@ -348,11 +345,7 @@ export class ArticlesService {
 
   async listReviewArticle(
     user: User,
-    queries: {
-      page?: number;
-      limit?: number;
-      search?: string;
-    },
+    queries: QueryPaginationInterface,
   ): Promise<{ list: Article[]; meta: PaginationInterface }> {
     const page = queries.page ?? 1;
     const limit = queries.limit ?? 10;

@@ -88,7 +88,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       sort?: Record<string, 1 | -1>;
       populate?: PopulateOptions | (string | PopulateOptions)[];
     },
-  ): Promise<{ data: TDocument[]; meta: PaginationInterface }> {
+  ): Promise<{ list: TDocument[]; meta: PaginationInterface }> {
     const { page, limit, sort = { createdAt: -1 }, populate } = options;
 
     let q = this.model
@@ -101,13 +101,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       q = q.populate(populate);
     }
 
-    const [data, total] = await Promise.all([
+    const [list, total] = await Promise.all([
       q,
       this.model.countDocuments(filterQuery),
     ]);
 
     return {
-      data,
+      list,
       meta: {
         total,
         page,

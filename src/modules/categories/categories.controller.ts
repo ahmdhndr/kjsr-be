@@ -54,10 +54,7 @@ export class CategoriesController {
   @Serialize(ListCategoryDto)
   async getAllCategories(@Query() query: QueryPaginationInterface) {
     const result = await this.categoriesService.findAllCategories(query);
-    return {
-      list: result.data,
-      meta: result.meta,
-    };
+    return result;
   }
 
   @Delete(':id')

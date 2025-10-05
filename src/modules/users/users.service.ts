@@ -138,4 +138,14 @@ export class UsersService {
       handleServiceError(error);
     }
   }
+
+  async isEmailRegistered(findUserDto: FilterQuery<User>) {
+    try {
+      const user = await this.usersRepository.findOne(findUserDto);
+
+      return user;
+    } catch (error) {
+      handleServiceError(error);
+    }
+  }
 }

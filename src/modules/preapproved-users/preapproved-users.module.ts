@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { UsersModule } from '@modules/users/users.module';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from '@shared/mail/mail.module';
@@ -13,14 +14,15 @@ import {
 
 @Module({
   imports: [
-    MailModule,
-    JwtModule,
     MongooseModule.forFeature([
       { name: PreapprovedUser.name, schema: PreapprovedUserSchema },
     ]),
+    forwardRef(() => UsersModule),
+    MailModule,
+    JwtModule,
   ],
-  controllers: [PreapprovedUsersController],
   providers: [PreapprovedUsersService, PreapprovedUserRepository],
+  controllers: [PreapprovedUsersController],
   exports: [PreapprovedUsersService],
 })
 export class PreapprovedUsersModule {}

@@ -10,3 +10,7 @@ export interface QueryPaginationInterface {
   limit?: number;
   search?: string;
 }
+
+export interface ArticlePaginationInterface extends QueryPaginationInterface {
+  category?: string;
+}

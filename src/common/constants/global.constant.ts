@@ -13,7 +13,7 @@ export enum STATUS_PREAPPROVAL {
 
 export const DEFAULT_EMAIL_FROM = 'KJSR <no-reply@kjsr.or.id>';
 export const EMAIL_FROM_ADMIN = 'Admin KJSR <admin@kjsr.or.id>';
-export const ADMIN_RECIPIENT = 'admin@kjsr.or.id';
+export const ADMIN_RECIPIENT = ['admin@kjsr.or.id'];
 
 export enum ArticleStatus {
   DRAFT = 'draft',

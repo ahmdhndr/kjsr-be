@@ -34,15 +34,22 @@ export class MailService {
         template,
         context = {},
       } = data;
+
+      const mergedContext = {
+        ...context,
+        clientUrl: this.configService.get<string>('CLIENT_URL'),
+        brandLogo: this.configService.get<string>('EMAIL_BRAND_LOGO'),
+      };
       const options: ISendMailOptions = {
         from,
         to: recipients,
         subject,
         template,
-        context,
+        context: mergedContext,
       };
       await this.mailerService.sendMail(options);
     } catch (error) {
+      console.log('mail error\n', error);
       handleServiceError(error);
     }
   }
