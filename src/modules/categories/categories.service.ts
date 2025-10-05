@@ -1,4 +1,7 @@
-import { PaginationInterface } from '@common/interfaces/pagination/pagination.interface';
+import {
+  PaginationInterface,
+  QueryPaginationInterface,
+} from '@common/interfaces/pagination/pagination.interface';
 import { MediaService } from '@modules/media/media.service';
 import {
   BadRequestException,
@@ -67,11 +70,9 @@ export class CategoriesService {
     }
   }
 
-  async findAllCategories(queries: {
-    page?: number;
-    limit?: number;
-    search?: string;
-  }): Promise<{ data: Category[]; meta: PaginationInterface }> {
+  async findAllCategories(
+    queries: QueryPaginationInterface,
+  ): Promise<{ list: Category[]; meta: PaginationInterface }> {
     const page = queries.page ?? 1;
     const limit = queries.limit ?? 10;
     const search = queries.search?.trim();

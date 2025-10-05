@@ -16,11 +16,11 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    PreapprovedUsersModule,
     CryptoModule,
     PassportModule,
     OTPModule,
     MailModule,
-    PreapprovedUsersModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
