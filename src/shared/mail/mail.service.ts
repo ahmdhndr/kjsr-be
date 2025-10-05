@@ -49,7 +49,6 @@ export class MailService {
       };
       await this.mailerService.sendMail(options);
     } catch (error) {
-      console.log('mail error\n', error);
       handleServiceError(error);
     }
   }
