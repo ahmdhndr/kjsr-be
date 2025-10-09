@@ -19,31 +19,43 @@ handlebars.registerHelper('year', () => new Date().getFullYear());
     OTPModule,
     MailerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        transport: {
-          host: configService.get<string>('EMAIL_SMTP_HOST'),
-          port: configService.get<number>('EMAIL_SMTP_PORT'),
-          secure: configService.get<boolean>('EMAIL_SMTP_SECURE'),
-          auth: {
-            user: configService.get<string>('EMAIL_SMTP_USER'),
-            pass: configService.get<string>('EMAIL_SMTP_PASS'),
+      useFactory: (configService: ConfigService) => {
+        const secure =
+          configService.get<string>('EMAIL_SMTP_SECURE') === 'true';
+
+        return {
+          transport: {
+            host: configService.get<string>('EMAIL_SMTP_HOST'),
+            port: configService.get<number>('EMAIL_SMTP_PORT'),
+            secure,
+            auth: {
+              user: configService.get<string>('EMAIL_SMTP_USER'),
+              pass: configService.get<string>('EMAIL_SMTP_PASS'),
+            },
+            tls: {
+              rejectUnauthorized: false, // menghindari SSL validation render
+            },
           },
-        },
-        defaults: {
-          from: DEFAULT_EMAIL_FROM,
-          context: {
-            clientUrl: configService.get<string>('CLIENT_URL'),
-            brandLogo: configService.get<string>('EMAIL_BRAND_LOGO'),
+          defaults: {
+            from: DEFAULT_EMAIL_FROM,
+            context: {
+              clientUrl: configService.get<string>('CLIENT_URL'),
+              brandLogo: configService.get<string>('EMAIL_BRAND_LOGO'),
+            },
           },
-        },
-        template: {
-          dir: join(__dirname, 'shared/mail/templates'),
-          adapter,
-          options: {
-            strict: true,
+          template: {
+            dir: join(__dirname, 'shared/mail/templates'),
+            adapter,
+            options: {
+              strict: true,
+              runtimeOptions: {
+                allowProtoPropertiesByDefault: true,
+                allowProtoMethodsByDefault: true,
+              },
+            },
           },
-        },
-      }),
+        };
+      },
       inject: [ConfigService],
     }),
   ],

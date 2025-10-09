@@ -18,6 +18,7 @@ export class MailService {
     private readonly mailerService: MailerService,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async sendEmail(data: SendEmailDto) {
     try {
       const result = sendEmailSchema.safeParse(data);
@@ -47,7 +48,7 @@ export class MailService {
         template,
         context: mergedContext,
       };
-      await this.mailerService.sendMail(options);
+      this.mailerService.sendMail(options).catch((err) => console.error(err));
     } catch (error) {
       handleServiceError(error);
     }
@@ -81,7 +82,7 @@ export class MailService {
           template: 'reset-password',
           context: {
             resetLink,
-            user,
+            username: user.username,
           },
         };
         await this.sendEmail(emailData);
