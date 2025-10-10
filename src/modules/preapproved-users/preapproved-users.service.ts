@@ -1,7 +1,9 @@
 import {
   ADMIN_RECIPIENT,
+  MAILER,
   STATUS_PREAPPROVAL,
 } from '@common/constants/global.constant';
+import { Mailer } from '@common/interfaces/mailer';
 import {
   PaginationInterface,
   QueryPaginationInterface,
@@ -16,7 +18,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from '@shared/mail/mail.service';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import { FilterQuery } from 'mongoose';
@@ -36,7 +37,8 @@ import { PreapprovedUser } from './schema/preapproved-user.schema';
 export class PreapprovedUsersService {
   constructor(
     private readonly preapprovedUserRepository: PreapprovedUserRepository,
-    private readonly mailService: MailService,
+    @Inject(MAILER)
+    private readonly mailService: Mailer,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => UsersService))

@@ -1,4 +1,5 @@
 export const PASSWORD_HASHER = 'PasswordHasher';
+export const MAILER = 'Mailer';
 
 export enum ROLES {
   ADMIN = 'admin',
