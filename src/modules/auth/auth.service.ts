@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { PASSWORD_HASHER } from '@common/constants/global.constant';
+import { MAILER, PASSWORD_HASHER } from '@common/constants/global.constant';
+import { Mailer } from '@common/interfaces/mailer';
 import { PasswordHasher } from '@common/interfaces/password-hasher';
 import { OTPService } from '@modules/otp/otp.service';
 import { OTPType } from '@modules/otp/types/otp.type';
@@ -16,7 +17,6 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from '@shared/mail/mail.service';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import { Types } from 'mongoose';
@@ -34,7 +34,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly otpService: OTPService,
-    private readonly mailService: MailService,
+    @Inject(MAILER)
+    private readonly mailService: Mailer,
     @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: PasswordHasher,
     private readonly preapprovedUsersService: PreapprovedUsersService,

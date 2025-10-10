@@ -21,4 +21,6 @@ export const envSchema = z.object({
   EMAIL_BRAND_LOGO: z.string(),
   STORAGE_DRIVER: z.string(),
   BASE_URL: z.string(),
+  RESEND_API_KEY: z.string(),
+  EMAIL_PROVIDER: z.string(),
 });

@@ -1,4 +1,5 @@
-import { PASSWORD_HASHER } from '@common/constants/global.constant';
+import { MAILER, PASSWORD_HASHER } from '@common/constants/global.constant';
+import { Mailer } from '@common/interfaces/mailer';
 import { PasswordHasher } from '@common/interfaces/password-hasher';
 import { AuthService } from '@modules/auth/auth.service';
 import { LoginDto } from '@modules/auth/dto/login.dto';
@@ -12,7 +13,6 @@ import {
   UnprocessableEntityException,
   forwardRef,
 } from '@nestjs/common';
-import { MailService } from '@shared/mail/mail.service';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import { FilterQuery } from 'mongoose';
@@ -27,7 +27,8 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
     @Inject(PASSWORD_HASHER)
     private readonly hasher: PasswordHasher,
-    private readonly mailService: MailService,
+    @Inject(MAILER)
+    private readonly mailService: Mailer,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
