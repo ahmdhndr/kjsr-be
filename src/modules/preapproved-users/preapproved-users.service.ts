@@ -1,8 +1,4 @@
-import {
-  ADMIN_RECIPIENT,
-  MAILER,
-  STATUS_PREAPPROVAL,
-} from '@common/constants/global.constant';
+import { MAILER, STATUS_PREAPPROVAL } from '@common/constants/global.constant';
 import { Mailer } from '@common/interfaces/mailer';
 import {
   PaginationInterface,
@@ -84,11 +80,14 @@ export class PreapprovedUsersService {
       const result =
         await this.preapprovedUserRepository.create(preapprovedUser);
 
-      const adminRecipients = ADMIN_RECIPIENT as [string, ...string[]];
+      const recipients = this.configService
+        .get<string>('ADMIN_RECIPIENT')!
+        .split(',') as [string, ...string[]];
+      // const adminRecipients = ADMIN_RECIPIENT as [string, ...string[]];
 
       // send notif to admin
       await this.mailService.sendEmail({
-        recipients: adminRecipients,
+        recipients,
         subject: `[Notifikasi KJSR] Pengajuan Pendaftaran Anggota Baru dari ${preapprovedUser.email}`,
         template: 'request-preapproved-user',
         context: {

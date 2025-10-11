@@ -1,4 +1,3 @@
-import { DEFAULT_EMAIL_FROM } from '@common/constants/global.constant';
 import { OTPService } from '@modules/otp/otp.service';
 import { OTPType } from '@modules/otp/types/otp.type';
 import { User } from '@modules/users/schema/user.schema';
@@ -28,8 +27,10 @@ export class MailService {
         });
       }
 
+      const emailFrom = this.configService.get<string>('DEFAULT_EMAIL_FROM')!;
+
       const {
-        from = DEFAULT_EMAIL_FROM,
+        from = emailFrom,
         recipients,
         subject,
         template,

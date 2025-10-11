@@ -12,9 +12,12 @@ export enum STATUS_PREAPPROVAL {
   REJECTED = 'rejected',
 }
 
-export const DEFAULT_EMAIL_FROM = 'KJSR <no-reply@kjsr.or.id>';
-export const EMAIL_FROM_ADMIN = 'Admin KJSR <admin@kjsr.or.id>';
-export const ADMIN_RECIPIENT = ['admin@kjsr.or.id'];
+// export const DEFAULT_EMAIL_FROM = process.env.DEFAULT_EMAIL_FROM;
+// export const EMAIL_FROM_ADMIN = process.env.EMAIL_FROM_ADMIN;
+
+// export const ADMIN_RECIPIENT: string[] = JSON.parse(
+//   process.env.ADMIN_RECIPIENT as string,
+// );
 
 export enum ArticleStatus {
   DRAFT = 'draft',

@@ -1,4 +1,3 @@
-import { DEFAULT_EMAIL_FROM } from '@common/constants/global.constant';
 import { Mailer } from '@common/interfaces/mailer';
 import { OTPService } from '@modules/otp/otp.service';
 import { OTPType } from '@modules/otp/types/otp.type';
@@ -36,8 +35,10 @@ export class ResendMailService implements Mailer {
         });
       }
 
+      const emailFrom = this.configService.get<string>('DEFAULT_EMAIL_FROM')!;
+
       const {
-        from = DEFAULT_EMAIL_FROM,
+        from = emailFrom,
         recipients,
         subject,
         template,
