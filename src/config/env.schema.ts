@@ -23,4 +23,7 @@ export const envSchema = z.object({
   BASE_URL: z.string(),
   RESEND_API_KEY: z.string(),
   EMAIL_PROVIDER: z.string(),
+  DEFAULT_EMAIL_FROM: z.string(),
+  EMAIL_FROM_ADMIN: z.string(),
+  ADMIN_RECIPIENT: z.string(),
 });

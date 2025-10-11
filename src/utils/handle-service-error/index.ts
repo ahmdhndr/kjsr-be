@@ -2,6 +2,7 @@ import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 
 export function handleServiceError(error: unknown): never {
+  console.error('ERROR\n', error);
   if (error instanceof TokenExpiredError) {
     throw new HttpException('Token expired', 401);
   }
