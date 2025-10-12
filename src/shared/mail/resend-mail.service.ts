@@ -2,8 +2,9 @@ import { Mailer } from '@common/interfaces/mailer';
 import { OTPService } from '@modules/otp/otp.service';
 import { OTPType } from '@modules/otp/types/otp.type';
 import { User } from '@modules/users/schema/user.schema';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { render } from '@react-email/components';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import * as fs from 'fs';
@@ -12,10 +13,15 @@ import * as path from 'path';
 import { CreateEmailOptions, Resend } from 'resend';
 
 import { SendEmailDto, sendEmailSchema } from './dto/send-email.dto';
+import RegistrationSuccess from './templates/emails/registration-success';
+import ResetPassword from './templates/emails/reset-password';
+
+// import RegistrationSuccess from './templates/emails';
 
 @Injectable()
 export class ResendMailService implements Mailer {
   private resend: Resend;
+  private readonly logger = new Logger(ResendMailService.name);
 
   constructor(
     private configService: ConfigService,
@@ -42,22 +48,24 @@ export class ResendMailService implements Mailer {
         recipients,
         subject,
         template,
-        context = {},
+        // context = {},
       } = data;
-      const finalHtml = template
-        ? this.renderTemplate(template, context || {})
-        : '<p>No content</p>';
+      // const finalHtml = template
+      //   ? this.renderTemplate(template, context || {})
+      //   : '<p>No content</p>';
+      const finalHtml = await render(template);
 
       const options: CreateEmailOptions = {
         from,
         to: recipients,
         subject,
+        // html: finalHtml,
         html: finalHtml,
         // context: mergedContext,
       };
       await this.resend.emails.send(options);
     } catch (error) {
-      console.error('sendemail\n', error);
+      this.logger.error(error);
       handleServiceError(error);
     }
   }
@@ -85,7 +93,13 @@ export class ResendMailService implements Mailer {
         const emailData: SendEmailDto = {
           recipients: [user.email],
           subject: `KJSR verification code: ${token}`,
-          template: 'registration-success',
+          template: RegistrationSuccess({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            otp: token!,
+          }),
           context: {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -102,7 +116,10 @@ export class ResendMailService implements Mailer {
         const emailData: SendEmailDto = {
           recipients: [user.email],
           subject: '[KJSR] reset password request',
-          template: 'reset-password',
+          template: ResetPassword({
+            username: user.username,
+            resetLink,
+          }),
           context: {
             resetLink,
             username: user.username,
@@ -112,7 +129,7 @@ export class ResendMailService implements Mailer {
         return token;
       }
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       handleServiceError(error);
     }
   }

@@ -14,6 +14,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import PreapprovedApproved from '@shared/mail/templates/emails/preapproved-approved';
+import PreapprovedRejected from '@shared/mail/templates/emails/preapproved-rejected';
+import RequestPreapproval from '@shared/mail/templates/emails/request-preapproval';
 import { extractFirstZodError } from '@utils/extract-first-zod-error';
 import { handleServiceError } from '@utils/handle-service-error';
 import { FilterQuery } from 'mongoose';
@@ -84,12 +87,22 @@ export class PreapprovedUsersService {
         .get<string>('ADMIN_RECIPIENT')!
         .split(',') as [string, ...string[]];
       // const adminRecipients = ADMIN_RECIPIENT as [string, ...string[]];
+      // const emailHtml = await render(
+      //   RequestPreapproval({
+      //     email: preapprovedUser.email,
+      //     clientUrl: this.configService.get<string>('CLIENT_URL')!,
+      //   }),
+      // );
+      // const requestPreapprovalTemplate = await pretty(emailHtml);
 
       // send notif to admin
       await this.mailService.sendEmail({
         recipients,
         subject: `[Notifikasi KJSR] Pengajuan Pendaftaran Anggota Baru dari ${preapprovedUser.email}`,
-        template: 'request-preapproved-user',
+        template: RequestPreapproval({
+          email: preapprovedUser.email,
+          clientUrl: this.configService.get<string>('CLIENT_URL')!,
+        }),
         context: {
           email: preapprovedUser.email,
         },
@@ -153,11 +166,21 @@ export class PreapprovedUsersService {
           preapproval,
         );
 
+        // const preapprovedApprovedHtml = PreapprovedApproved({
+        //   email,
+        //   registerToken,
+        //   clientUrl: this.configService.get<string>('CLIENT_URL')!,
+        // });
+
         // send notif to user
         await this.mailService.sendEmail({
           recipients: [email],
           subject: `[Notifikasi KJSR] Status Pengajuan Pendaftaran Anggota KJSR`,
-          template: 'preapproved-approved',
+          template: PreapprovedApproved({
+            email,
+            registerToken,
+            clientUrl: this.configService.get<string>('CLIENT_URL')!,
+          }),
           context: {
             email,
             registerToken,
@@ -182,7 +205,10 @@ export class PreapprovedUsersService {
         await this.mailService.sendEmail({
           recipients: [email],
           subject: `[Notifikasi KJSR] Status Pengajuan Pendaftaran Anggota KJSR`,
-          template: 'preapproved-rejected',
+          template: PreapprovedRejected({
+            email,
+            reason,
+          }),
           context: {
             email,
             reason,
