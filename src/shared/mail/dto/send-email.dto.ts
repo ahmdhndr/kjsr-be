@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { z } from 'zod';
 
 export const sendEmailSchema = z.object({
@@ -8,8 +9,19 @@ export const sendEmailSchema = z.object({
   subject: z
     .string({ message: 'property `subject` is missing' })
     .nonempty('Subject cannot be empty'),
-  template: z.string({ message: 'property `template` is missing' }),
+  template: z.union([
+    z.string({ message: 'property `template` is missing' }),
+    z.custom<ReactElement>(
+      (val) => val !== null && typeof val === 'object' && '$$typeof' in val, // cara deteksi React element
+      {
+        message: 'Invalid React element for template',
+      },
+    ),
+  ]),
   context: z.record(z.any()).optional(),
 });
 
 export type SendEmailDto = z.infer<typeof sendEmailSchema>;
+export type SendEmailDtoNodemailer = SendEmailDto & {
+  template: string;
+};
